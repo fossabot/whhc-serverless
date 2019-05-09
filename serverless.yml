@@ -1,0 +1,32 @@
+service: whhc-api
+
+plugins:
+  - serverless-webpack
+  - serverless-sentry
+
+provider:
+  name: aws
+  region: eu-west-1
+  runtime: nodejs8.10
+  environment:
+    # VAR: ${file(./serverless.env.yml):${opt:stage, 'dev'}.VAR}
+
+custom:
+  sentry:
+    dsn: ${file(./serverless.env.yml):${opt:stage, 'dev'}.SENTRY_DNS}
+  webpack:
+    packager: 'yarn'
+    includeModules: false
+    keepOutputDirectory: true
+
+package:
+  individually: true
+
+functions:
+  # example:
+  #   handler: example.handler
+  #   events:
+  #     - http:
+  #         method: get
+  #         path: hello
+  #         integration: lambda

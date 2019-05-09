@@ -1,0 +1,42 @@
+{
+  "name": "whhc-serverless-api",
+  "version": "1.0.0",
+  "description": "Hockey Club API",
+  "author": "Jared Phayer <dev@jared.ph>",
+  "scripts": {
+    "deploy": "sls deploy -v -s dev",
+    "deploy:prod": "sls deploy -v -s prod",
+    "lint": "tslint --project tsconfig.json",
+    "start": "sls offline",
+    "test": "echo \"tests not created yet\" && exit 0"
+  },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "devDependencies": {
+    "@commitlint/cli": "^7.6.0",
+    "@commitlint/config-conventional": "^7.6.0",
+    "@types/node": "^12.0.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "cz-conventional-changelog": "^2.1.0",
+    "husky": "^2.2.0",
+    "serverless": "^1.23.0",
+    "serverless-sentry": "^1.2.0",
+    "serverless-webpack": "^5.3.0",
+    "tslint": "^5.16.0",
+    "tslint-config-airbnb": "^5.11.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.4.5",
+    "webpack": "^4.31.0",
+    "webpack-filter-warnings-plugin": "^1.2.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn test",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

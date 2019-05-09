@@ -1,0 +1,23 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended",
+    "tslint-config-airbnb",
+    "tslint-config-prettier"
+  ],
+  "jsRules": {
+    "no-unused-expression": true
+  },
+  "linterOptions": {
+    "exclude": ["node_modules/**"]
+  },
+  "rules": {
+    "import-name": false,
+    "object-shorthand-properties-first": false,
+    "ordered-imports": [true, { "grouped-imports": true }],
+    "strict-boolean-expressions": false,
+    "variable-name": false,
+    "jsx-no-lambda": false
+  },
+  "rulesDirectory": []
+}
