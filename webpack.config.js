@@ -5,6 +5,7 @@ const slsw = require('serverless-webpack');
 module.exports = {
   devtool: 'source-map',
   entry: slsw.lib.entries,
+  mode: 'none',
   module: {
     rules: [
       {
@@ -35,10 +36,12 @@ module.exports = {
         /mssql/,
         /mysql/,
         /oracledb/,
-        /pg/,
         /pg-native/,
         /pg-query-stream/,
+        /pg/,
+        /react-native-sqlite-storage/,
         /redis/,
+        /sql.js/,
         /sqlite3/,
       ],
     }),
