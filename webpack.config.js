@@ -1,9 +1,11 @@
+const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
 const path = require('path');
 const slsw = require('serverless-webpack');
 
 module.exports = {
   devtool: 'source-map',
   entry: slsw.lib.entries,
+  mode: 'none',
   module: {
     rules: [
       {
@@ -28,6 +30,21 @@ module.exports = {
     extensions: ['.js', '.json', '.ts', '.tsx'],
   },
   plugins: [
+    new FilterWarningsPlugin({
+      exclude: [
+        /mongodb/,
+        /mssql/,
+        /mysql/,
+        /oracledb/,
+        /pg-native/,
+        /pg-query-stream/,
+        /pg/,
+        /react-native-sqlite-storage/,
+        /redis/,
+        /sql.js/,
+        /sqlite3/,
+      ],
+    }),
   ],
   target: 'node',
 };
