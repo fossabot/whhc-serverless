@@ -14,6 +14,7 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
     "aws-lambda": "^0.1.2",
+    "contentful": "^7.5.1",
     "mysql2": "^1.6.5",
     "raven": "^2.6.4",
     "reflect-metadata": "^0.1.13",
