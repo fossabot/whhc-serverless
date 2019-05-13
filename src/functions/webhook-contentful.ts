@@ -2,7 +2,11 @@ import { Handler } from 'aws-lambda';
 import * as Raven from 'raven';
 import * as RavenLambdaWrapper from 'serverless-sentry-lib';
 
-import { isValidApiKey } from '../helpers/contentful';
+import {
+  CONTENTFUL_WEBHOOK_EVENTS,
+  isValidApiKey,
+} from '../helpers/contentful';
+import { deleteSimilarNews, setSimilarNews } from '../helpers/news';
 import { createWarehouseEvent } from '../helpers/warehouse';
 
 const handler: Handler = RavenLambdaWrapper.handler(
@@ -17,7 +21,7 @@ const handler: Handler = RavenLambdaWrapper.handler(
 
     if (!isValidApiKey(event.headers.apikey)) {
       return {
-        body: 'apikey is invalid',
+        body: `apikey is invalid`,
         statusCode: 403,
       };
     }
@@ -30,16 +34,12 @@ const handler: Handler = RavenLambdaWrapper.handler(
       };
     }
 
-    const topic = event.headers['X-Contentful-Topic'].replace(/^.*\./, '');
+    const action = `${contentType}_${event.headers[
+      'X-Contentful-Topic'
+    ].replace(/^.*\./, '')}`.toUpperCase() as CONTENTFUL_WEBHOOK_EVENTS;
 
     if (contentType === 'newsArticle') {
-      let action: 'PUBLISH' | 'UNPUBLISH';
-
-      if (topic === 'unpublish') {
-        action = 'UNPUBLISH';
-      } else if (topic === 'publish') {
-        action = 'PUBLISH';
-      }
+      await setSimilarNews();
 
       await createWarehouseEvent('WEBHOOK', {
         action,

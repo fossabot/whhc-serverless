@@ -13,8 +13,10 @@
   },
   "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
+    "@contentful/rich-text-types": "^13.1.0",
     "aws-lambda": "^0.1.2",
     "contentful": "^7.5.1",
+    "luxon": "^1.13.2",
     "mysql2": "^1.6.5",
     "raven": "^2.6.4",
     "reflect-metadata": "^0.1.13",

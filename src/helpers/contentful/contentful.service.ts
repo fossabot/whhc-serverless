@@ -6,4 +6,4 @@ export const client = createClient({
 });
 
 export const isValidApiKey = (key: string): boolean =>
-  key === process.env.webhookApiKey;
+  key === process.env.CONTENTFUL_WEBHOOK_API_KEY;
