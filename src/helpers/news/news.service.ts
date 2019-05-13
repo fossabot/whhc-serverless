@@ -1,7 +1,7 @@
 import { EntryCollection } from 'contentful';
 import { DateTime } from 'luxon';
 
-import { client, IList } from '../contentful';
+import { client, getTagIdByName, IList } from '../contentful';
 
 import { NewsArticle } from './news-article.class';
 import { SimilarNews } from './news.entity';
@@ -27,8 +27,7 @@ export const getNews = async ({
 
   if (slugs) query['fields.slug[in]'] = slugs.join(',');
 
-  // TODO: Add tags
-  // if (tag) query['fields.tags.sys.id'] = await getTagIdByName(tag);
+  if (tag) query['fields.tags.sys.id'] = await getTagIdByName(tag);
 
   if (hasPhotos) query['fields.photos[exists]'] = true;
 
