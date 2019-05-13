@@ -29,8 +29,6 @@ custom:
     dsn: ${file(./serverless.env.yml):${opt:stage, 'dev'}.sentry.dns}
   webpack:
     packager: 'yarn'
-    includeModules: false
-    keepOutputDirectory: true
 
 package:
   individually: true
