@@ -34,15 +34,23 @@ package:
   individually: true
 
 functions:
-  webhook-gocardless:
-    handler: src/functions/webhook-gocardless.handler
+  cron-similar-news:
+    handler: src/functions/cron-similar-news.handler
+    memorySize: 1024
+    timeout: 30
     events:
-      - http:
-          method: post
-          path: webhooks/gocardless
+      - schedule:
+          name: cron-similar-news-${opt:stage, 'dev'}
+          rate: cron(0 2 ? * * *)
   webhook-contentful:
     handler: src/functions/webhook-contentful.handler
     events:
       - http:
           method: post
           path: webhooks/contentful
+  webhook-gocardless:
+    handler: src/functions/webhook-gocardless.handler
+    events:
+      - http:
+          method: post
+          path: webhooks/gocardless

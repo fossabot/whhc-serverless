@@ -38,21 +38,38 @@ const handler: Handler = RavenLambdaWrapper.handler(
       'X-Contentful-Topic'
     ].replace(/^.*\./, '')}`.toUpperCase() as CONTENTFUL_WEBHOOK_EVENTS;
 
-    if (contentType === 'newsArticle') {
-      await setSimilarNews();
+    let error: Error;
+    let statusCode = 201;
 
-      await createWarehouseEvent('WEBHOOK', {
-        action,
-        contentType,
-        context: 'CONTENTFUL',
-        id,
-        user,
-      });
+    try {
+      switch (action) {
+        case 'NEWSARTICLE_PUBLISH':
+          await setSimilarNews();
+          break;
+
+        case 'NEWSARTICLE_UNPUBLISH':
+          await deleteSimilarNews(id);
+          await setSimilarNews();
+          break;
+
+        default:
+          throw new Error(`unexpected action:  ${action}`);
+      }
+    } catch (caughtError) {
+      statusCode = 500;
+      error = caughtError;
     }
 
-    return {
-      statusCode: 201,
-    };
+    await createWarehouseEvent('WEBHOOK', {
+      action,
+      contentType,
+      context: 'CONTENTFUL',
+      error,
+      id,
+      user,
+    });
+
+    return { statusCode, error };
   },
 );
 
