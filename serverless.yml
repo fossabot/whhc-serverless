@@ -9,21 +9,12 @@ provider:
   name: aws
   region: eu-west-1
   runtime: nodejs8.10
-  environment:
-    DB_DATABASE: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_DATABASE}
-    DB_HOST: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_HOST}
-    DB_LOGGING: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_LOGGING}
-    DB_PASSWORD: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_PASSWORD}
-    DB_PORT: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_PORT}
-    DB_SYNCHRONIZE: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_SYNCHRONIZE}
-    DB_USERNAME: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_USERNAME}
-    GOCARDLESS_SECRET: ${file(./serverless.env.yml):${opt:stage, 'dev'}.GOCARDLESS_SECRET}
 
 custom:
   serverless-offline:
     port: 4000
   sentry:
-    dsn: ${file(./serverless.env.yml):${opt:stage, 'dev'}.SENTRY_DNS}
+    dsn: ${env:SENTRY_DNS}
   webpack:
     packager: 'yarn'
     includeModules: false
