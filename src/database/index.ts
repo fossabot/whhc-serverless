@@ -7,7 +7,10 @@ import {
   getConnectionManager,
 } from 'typeorm';
 
+import { SimilarNews } from '../helpers/news';
 import { Warehouse } from '../helpers/warehouse';
+
+const entities = [SimilarNews, Warehouse];
 
 export class Database {
   private connectionManager: ConnectionManager;
@@ -29,13 +32,13 @@ export class Database {
     } else {
       const connectionOptions: ConnectionOptions = {
         database: process.env.DB_DATABASE,
-        entities: [Warehouse],
+        entities,
         host: process.env.DB_HOST,
-        logging: Boolean(process.env.DB_LOGGING),
+        logging: process.env.DB_LOGGING === 'true',
         name: CONNECTION_NAME,
         password: process.env.DB_PASSWORD,
-        port: Number(process.env.DB_PORT),
-        synchronize: Boolean(process.env.DB_SYNCHRONIZE),
+        port: +process.env.DB_PORT,
+        synchronize: process.env.DB_SYNCHRONIZE === 'true',
         type: 'mysql',
         username: process.env.DB_USERNAME,
       };

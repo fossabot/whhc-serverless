@@ -10,30 +10,45 @@ provider:
   region: eu-west-1
   runtime: nodejs8.10
   environment:
-    DB_DATABASE: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_DATABASE}
-    DB_HOST: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_HOST}
-    DB_LOGGING: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_LOGGING}
-    DB_PASSWORD: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_PASSWORD}
-    DB_PORT: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_PORT}
-    DB_SYNCHRONIZE: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_SYNCHRONIZE}
-    DB_USERNAME: ${file(./serverless.env.yml):${opt:stage, 'dev'}.DB_USERNAME}
-    GOCARDLESS_SECRET: ${file(./serverless.env.yml):${opt:stage, 'dev'}.GOCARDLESS_SECRET}
+    CONTENTFUL_ACCESS_TOKEN: ${file(./serverless.env.yml):${opt:stage, 'dev'}.contentful.accessToken}
+    CONTENTFUL_SPACE: ${file(./serverless.env.yml):${opt:stage, 'dev'}.contentful.space}
+    CONTENTFUL_WEBHOOK_API_KEY: ${file(./serverless.env.yml):${opt:stage, 'dev'}.contentful.webhookApiKey}
+    DB_DATABASE: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.database}
+    DB_HOST: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.host}
+    DB_LOGGING: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.logging}
+    DB_PASSWORD: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.password}
+    DB_PORT: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.port}
+    DB_SYNCHRONIZE: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.synchronize}
+    DB_USERNAME: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.username}
+    GOCARDLESS_SECRET: ${file(./serverless.env.yml):${opt:stage, 'dev'}.gocardless.secret}
 
 custom:
   serverless-offline:
     port: 4000
   sentry:
-    dsn: ${file(./serverless.env.yml):${opt:stage, 'dev'}.SENTRY_DNS}
+    dsn: ${file(./serverless.env.yml):${opt:stage, 'dev'}.sentry.dns}
   webpack:
     packager: 'yarn'
-    includeModules: false
-    keepOutputDirectory: true
 
 package:
   individually: true
 
 functions:
-  gocardless:
+  cron-similar-news:
+    handler: src/functions/cron-similar-news.handler
+    memorySize: 1024
+    timeout: 30
+    events:
+      - schedule:
+          name: cron-similar-news-${opt:stage, 'dev'}
+          rate: cron(0 2 ? * * *)
+  webhook-contentful:
+    handler: src/functions/webhook-contentful.handler
+    events:
+      - http:
+          method: post
+          path: webhooks/contentful
+  webhook-gocardless:
     handler: src/functions/webhook-gocardless.handler
     events:
       - http:
