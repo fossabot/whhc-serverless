@@ -1,0 +1,150 @@
+version: 2
+
+defaults: &defaults
+  working_directory: ~/code
+  docker:
+    - image: circleci/node:8.10
+
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/code
+      - restore_cache:
+          keys:
+            - dependencies-cache-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - dependencies-cache
+      - run:
+          name: Install dependencies
+          command: |
+            yarn install
+      - run:
+          name: Run tests with code coverage
+          command: yarn lint
+      - save_cache:
+          paths:
+            - node_modules
+          key: dependencies-cache-{{ checksum "package.json" }}
+      - persist_to_workspace:
+          root: ./
+          paths: ./
+
+  lint:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/code
+      - run:
+          name: Lint
+          command: yarn lint
+
+  test:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/code
+      - run:
+          name: Test
+          command: yarn test
+
+  deploy_to_dev:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/code
+      - run:
+          name: Install Easy Install
+          command: sudo apt-get install python-setuptools python-dev build-essential
+      - run:
+          name: Install PIP
+          command: sudo easy_install pip
+      - run:
+          name: Install awscli
+          command: sudo pip install awscli
+      - run:
+          name: Install serverless
+          command: |
+            sudo npm i -g serverless
+      - run:
+          name: Set .env with SENTRY_DNS
+          command: |
+            echo SENTRY_DNS=${SENTRY_DNS} > .env
+      - run:
+          name: Deploy
+          command: |
+            serverless config credentials --provider aws --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY}
+            serverless deploy -v -s dev
+
+  deploy_to_prod:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/code
+      - run:
+          name: Install Easy Install
+          command: sudo apt-get install python-setuptools python-dev build-essential
+      - run:
+          name: Install PIP
+          command: sudo easy_install pip
+      - run:
+          name: Install awscli
+          command: sudo pip install awscli
+      - run:
+          name: Install serverless
+          command: |
+            sudo npm i -g serverless
+      - run:
+          name: Set .env with SENTRY_DNS
+          command: |
+            echo SENTRY_DNS=${SENTRY_DNS} > .env
+      - run:
+          name: Deploy
+          command: |
+            serverless config credentials --provider aws --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY}
+            serverless deploy -v -s dev
+
+workflows:
+  version: 2
+  serverless:
+    jobs:
+      - build
+
+      - lint:
+          requires:
+            - build
+
+      - test:
+          requires:
+            - build
+
+      - hold_deployment_to_dev:
+          type: approval
+          filters:
+            branches:
+              ignore:
+                - dev
+                - prod
+
+      - deploy_to_dev:
+          context: WHHC_DEV
+          requires:
+            - lint
+            - test
+            - hold_deployment_to_dev
+          filters:
+            branches:
+              ignore:
+                - prod
+
+      - deploy_to_prod:
+          context: WHHC_PROD
+          requires:
+            - lint
+            - test
+          filters:
+            branches:
+              only:
+                - prod
