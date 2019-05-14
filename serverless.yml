@@ -9,24 +9,12 @@ provider:
   name: aws
   region: eu-west-1
   runtime: nodejs8.10
-  environment:
-    CONTENTFUL_ACCESS_TOKEN: ${file(./serverless.env.yml):${opt:stage, 'dev'}.contentful.accessToken}
-    CONTENTFUL_SPACE: ${file(./serverless.env.yml):${opt:stage, 'dev'}.contentful.space}
-    CONTENTFUL_WEBHOOK_API_KEY: ${file(./serverless.env.yml):${opt:stage, 'dev'}.contentful.webhookApiKey}
-    DB_DATABASE: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.database}
-    DB_HOST: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.host}
-    DB_LOGGING: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.logging}
-    DB_PASSWORD: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.password}
-    DB_PORT: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.port}
-    DB_SYNCHRONIZE: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.synchronize}
-    DB_USERNAME: ${file(./serverless.env.yml):${opt:stage, 'dev'}.database.username}
-    GOCARDLESS_SECRET: ${file(./serverless.env.yml):${opt:stage, 'dev'}.gocardless.secret}
 
 custom:
   serverless-offline:
     port: 4000
   sentry:
-    dsn: ${file(./serverless.env.yml):${opt:stage, 'dev'}.sentry.dns}
+    dsn: ${env:SENTRY_DNS}
   webpack:
     packager: 'yarn'
 
