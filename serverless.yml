@@ -17,14 +17,26 @@ custom:
     dsn: ${env:SENTRY_DNS}
   webpack:
     packager: 'yarn'
-    includeModules: false
-    keepOutputDirectory: true
 
 package:
   individually: true
 
 functions:
-  gocardless:
+  cron-similar-news:
+    handler: src/functions/cron-similar-news.handler
+    memorySize: 1024
+    timeout: 30
+    events:
+      - schedule:
+          name: cron-similar-news-${opt:stage, 'dev'}
+          rate: cron(0 2 ? * * *)
+  webhook-contentful:
+    handler: src/functions/webhook-contentful.handler
+    events:
+      - http:
+          method: post
+          path: webhooks/contentful
+  webhook-gocardless:
     handler: src/functions/webhook-gocardless.handler
     events:
       - http:
